@@ -52,6 +52,10 @@ int main(void)
 	oled_init();
 	mpu6050_init();
 	bluetooth_ch9141_init();
+	pwm_init(TIM5_PWM_CH2_A1, 17000,0);
+	pwm_init(TIM5_PWM_CH4_A3, 17000,0);
+	encoder_quad_init(TIM3_ENCODER, TIM3_ENCODER_CH1_B4, TIM3_ENCODER_CH2_B5);
+	encoder_quad_init(TIM4_ENCODER, TIM4_ENCODER_CH1_B6, TIM4_ENCODER_CH2_B7);
     // 此处编写用户代码 例如外设初始化代码等
 
     while(1)
