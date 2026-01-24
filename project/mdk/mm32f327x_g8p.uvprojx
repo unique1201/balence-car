@@ -730,16 +730,6 @@
               <FilePath>..\..\libraries\zf_device\zf_device_absolute_encoder.h</FilePath>
             </File>
             <File>
-              <FileName>zf_device_bluetooth_ch9141.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_ch9141.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_bluetooth_ch9141.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_ch9141.h</FilePath>
-            </File>
-            <File>
               <FileName>zf_device_camera.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\libraries\zf_device\zf_device_camera.c</FilePath>
@@ -968,6 +958,16 @@
               <FileName>zf_device_wireless_uart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\libraries\zf_device\zf_device_wireless_uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_bluetooth_hc04.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_hc04.c</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_bluetooth_hc04.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_hc04.h</FilePath>
             </File>
           </Files>
         </Group>
