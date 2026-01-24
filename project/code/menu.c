@@ -2,9 +2,9 @@
 #include <stdint.h>
 #include "zf_device_oled.h"
 #include "zf_device_key.h"
+#include "IMU.h"
 
 //变量
-float kp=0.0f,ki=0.0f,kd=0.0f;
 
 void display_menu(struct option_class* option, int displayItems, int currentLine)
 {
@@ -19,23 +19,32 @@ void display_value(struct option_class* option, int displayItems)
 	for (int8_t i = 0; i < displayItems; i++)
 	{
 		//PID参数显示
-		if (strcmp(option[i].Name, "kp") == 0) {
-			int32_t temp=kp*100;                              
-			oled_show_int(i, 8, temp/100, 3);
-			oled_show_string(i, 11, ".");
-            oled_show_int(i, 12, temp%100, 2);
+		if (strcmp(option[i].Name, "kp1") == 0) {
+			oled_show_float(i, 8, kp1, 3, 2);
         } 
-		else if (strcmp(option[i].Name, "ki") == 0) {
-            int32_t temp=ki*100;                             
-			oled_show_int(i, 8, temp/100, 3);
-			oled_show_string(i, 11, ".");
-            oled_show_int(i, 12, temp%100, 2);
+		else if (strcmp(option[i].Name, "ki1") == 0) {
+            oled_show_float(i, 8, ki1, 3, 2);
         }
-		else if (strcmp(option[i].Name, "kd") == 0) {
-            int32_t temp=kd*100;                              
-			oled_show_int(i, 8, temp/100, 3);
-			oled_show_string(i, 11, ".");
-            oled_show_int(i, 12, temp%100, 2);
+		else if (strcmp(option[i].Name, "kd1") == 0) {
+            oled_show_float(i, 8, kd1, 3, 2);
+        }
+		else if (strcmp(option[i].Name, "kp2") == 0) {
+			oled_show_float(i, 8, kp2, 3, 2);
+        } 
+		else if (strcmp(option[i].Name, "ki2") == 0) {
+            oled_show_float(i, 8, ki2, 3, 2);
+        }
+		else if (strcmp(option[i].Name, "kd2") == 0) {
+            oled_show_float(i, 8, kd2, 3, 2);
+        }
+		else if (strcmp(option[i].Name, "kp3") == 0) {
+			oled_show_float(i, 8, kp3, 3, 2);
+        } 
+		else if (strcmp(option[i].Name, "ki3") == 0) {
+            oled_show_float(i, 8, ki3, 3, 2);
+        }
+		else if (strcmp(option[i].Name, "kd3") == 0) {
+            oled_show_float(i, 8, kd3, 3, 2);
         }
 	}
 }
@@ -47,7 +56,7 @@ void Menu_loop(struct option_class* option)
     int8_t currentLine = 0;       //光标所在行  
 	
 	while (option[totalItems].Name[0] != ' ' && option[totalItems].Name[0] != '\0') {totalItems++;}             
-	//计算总项数，在这里是到空格停止（不不包括空格项）
+	//计算总项数，在这里是到空格停止（不包括空格项）
 	
 	
     display_menu(option, displayItems, currentLine);
@@ -55,7 +64,33 @@ void Menu_loop(struct option_class* option)
 	
 	while (1)
 	{
-		
+		if (key_get_state(KEY_1))//上移
+		{
+			oled_show_string(currentLine, 1, " ");
+			currentLine--;
+			if (currentLine < 0) {
+				currentLine = displayItems - 1;
+			}
+			oled_show_string(currentLine, 1, ">");
+		}   
+		if (key_get_state(KEY_2))   //下移
+		{
+			oled_show_string(currentLine, 1, " ");
+			currentLine++;
+			if (currentLine > displayItems - 1) {
+				currentLine = 0;
+			}
+			oled_show_string(currentLine, 1, ">");
+		} 
+		if (key_get_state(KEY_3))   //确认
+		{	
+			oled_clear();
+			if (currentLine < displayItems && option[currentLine].func != NULL) {
+				option[currentLine].func();// 从子菜单返回后刷新显示
+				display_menu(option, displayItems, currentLine);
+			}			
+		}
+		if (key_get_state(KEY_4)){oled_clear();return;}   //返回
 	}
 	//这里写调参啥的，也可以用函数让这里简洁一点
 }
@@ -76,9 +111,9 @@ void tiaocan(void)
 {
     struct option_class option[]=
     {
-        {"kp", NULL},
-        {"ki", NULL},
-        {"kd", NULL},
+        {"k1", K1},
+        {"k2", K2},
+        {"k3", K3},
 		{" ", NULL}
     };
     Menu_loop(option);
@@ -88,10 +123,10 @@ void Mode(void)
 {
     struct option_class option[]=
     {
-        {"1", NULL},
-        {"2", NULL},
-        {"3", NULL},
-		{"4", NULL},
+        {"M1", M1},
+        {"M2", M2},
+        {"M3", M3},
+		{"M4", M4},
 		{" ", NULL}
     };
     Menu_loop(option);
@@ -101,8 +136,123 @@ void Blue(void)
 {
     struct option_class option[]=
     {
-        {"Blue", NULL},
+        {"Blue", M5},
 		{" ", NULL}
     };
     Menu_loop(option);
+}
+
+void K1(void)
+{
+    struct option_class option[]=
+    {
+        {"kp1", Kp1},
+        {"ki1", Ki1},
+        {"kd1", Kd1},
+		{" ", NULL}
+    };
+    Menu_loop(option);
+}
+
+void K2(void)
+{
+    struct option_class option[]=
+    {
+        {"kp2", Kp2},
+        {"ki2", Ki2},
+        {"kd2", Kd2},
+		{" ", NULL}
+    };
+    Menu_loop(option);
+}
+
+void K3(void)
+{
+    struct option_class option[]=
+    {
+        {"kp3", Kp3},
+        {"ki3", Ki3},
+        {"kd3", Kd3},
+		{" ", NULL}
+    };
+    Menu_loop(option);
+}
+
+void Kp1(void)
+{
+    kp1+=0.1;
+	oled_show_float(0, 8, kp1, 3, 2);
+}
+
+void Ki1(void)
+{
+    ki1+=0.1;
+	oled_show_float(0, 8, ki1, 3, 2);
+}
+
+void Kd1(void)
+{
+    kd1+=0.1;
+	oled_show_float(0, 8, kd1, 3, 2);
+}
+
+void Kp2(void)
+{
+    kp2+=0.1;
+	oled_show_float(0, 8, kp2, 3, 2);
+}
+
+void Ki2(void)
+{
+    ki2+=0.1;
+	oled_show_float(0, 8, ki2, 3, 2);
+}
+
+void Kd2(void)
+{
+    kd2+=0.1;
+	oled_show_float(0, 8, kd2, 3, 2);
+}
+
+void Kp3(void)
+{
+    kp3+=0.1;
+	oled_show_float(0, 8, kp3, 3, 2);
+}
+
+void Ki3(void)
+{
+    ki3+=0.1;
+	oled_show_float(0, 8, ki3, 3, 2);
+}
+
+void Kd3(void)
+{
+    kd3+=0.1;
+	oled_show_float(0, 8, kd3, 3, 2);
+}
+
+void M1(void)
+{
+    PID(0,0);
+}
+
+void M2(void)
+{
+    
+}
+
+void M3(void)
+{
+    
+}
+
+void M4(void)
+{
+    
+}
+
+void M5(void)
+{
+    
 }
