@@ -56,14 +56,18 @@ void countlaps(void)
 	}
 	if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))
 	{
-//	led(on);
-//	system_delay_ms (100);
-//	led(off);			//声光提示！！！
+	led_on();
+	buzzer_on();
+	system_delay_ms (100);
+	led_off();
+	buzzer_off();
 	}
 	if(!gpio_get_level(GRAY_CHANNEL_3)||!gpio_get_level(GRAY_CHANNEL_4))
 	{
-//	led(on);
-//	system_delay_ms (100);
-//	led(off);
+	led_on();
+	buzzer_on();
+	system_delay_ms (200);
+	led_off();
+	buzzer_off();
 	}
 }
