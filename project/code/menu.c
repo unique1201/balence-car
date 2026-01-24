@@ -5,6 +5,9 @@
 #include "IMU.h"
 
 //变量
+extern float kp1,ki1,kd1;
+extern float kp2,ki2,kd2;
+extern float kp3,ki3,kd3;
 
 void display_menu(struct option_class* option, int displayItems, int currentLine)
 {
