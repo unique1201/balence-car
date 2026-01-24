@@ -35,6 +35,8 @@
 
 #include "zf_common_headfile.h"
 #include "IMU.h"
+#include "encoder.h"
+#include "motor.h"
 
 // 打开新的工程或者工程移动了位置务必执行以下操作
 // 第一步 关闭上面所有打开的文件
@@ -86,10 +88,8 @@ int main(void)
 	oled_init();
 	mpu6050_init();
 	bluetooth_hc04_init();
-	pwm_init(TIM5_PWM_CH2_A1, 17000,0);
-	pwm_init(TIM5_PWM_CH4_A3, 17000,0);
-	encoder_quad_init(TIM3_ENCODER, TIM3_ENCODER_CH1_B4, TIM3_ENCODER_CH2_B5);
-	encoder_quad_init(TIM4_ENCODER, TIM4_ENCODER_CH1_B6, TIM4_ENCODER_CH2_B7);
+	motor_init();
+	encoder_init();
 	pit_us_init(TIM1_PIT, 1000);
     // 此处编写用户代码 例如外设初始化代码等
 

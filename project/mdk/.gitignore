@@ -1,0 +1,49 @@
+# Keil 相关忽略
+*.uvoptx
+*.uvprojx.bak
+*.~*
+*.bak
+*.tmp
+
+# 编译输出目录
+Objects/
+Listing/
+Build/
+output/
+bin/
+*.axf
+*.elf
+*.hex
+*.map
+*.lib
+*.o
+*.d
+
+# Keil 本地用户配置
+.IAR/
+.Keil/
+.project
+.cproject
+
+# IDE / 编辑器临时文件
+*.dep
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.sdf
+*.ipch
+*.cache
+Thumbs.db
+.DS_Store
+*.user
+*.filter
+*.ncb
+*.suo
+*.plg
+
+# 本地配置（根据情况）
+Settings/
+Local/
+Logs/
