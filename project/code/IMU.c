@@ -45,7 +45,7 @@ void ztjs()
 	AngleGyro = Angle + data_gyro_y/32768 * 2000*0.001;
 	Angle = Alpha *AngleAcc +(1-Alpha)* AngleGyro;
 }
-void PID()
+void PID(float Target2,float Target3)//2是速度环，设置目标速度。3是转向环，设置的是左右速度差。
 {
 	int16_t count0=0,count1=0;
 	count0++;
@@ -60,7 +60,7 @@ void PID()
 		
 		actualSpeed = AveSpeed;
 		Error11=Error01;
-		Error01=0- actualSpeed;
+		Error01=Target2- actualSpeed;
 		ErrorInt1+=Error01;
 		Target=kp2*Error01+ki2*ErrorInt1+kd2*(Error01-Error11);
 		
@@ -71,7 +71,7 @@ void PID()
 		
 		actualTurn = DifSpeed;
 		Error12=Error02;
-		Error02=0- actualSpeed;
+		Error02=Target3- actualTurn;
 		ErrorInt2+=Error02;
 		DifPWM=kp3*Error02+ki3*ErrorInt2+kd3*(Error02-Error12);
 		
