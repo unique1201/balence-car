@@ -3,6 +3,8 @@
 #include "trace.h"
 #include "IMU.h"
 
+int lap = 0;
+
 void gray_sensor_init(void)
 {
     for (gray_channel_enum ch = GRAY_CHANNEL_0; ch < 8; ch++)
@@ -39,4 +41,29 @@ void trace(void)
 	else if(!gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4)) PID(50,50);
 	else if(!gpio_get_level(GRAY_CHANNEL_4)&&gpio_get_level(GRAY_CHANNEL_3)) PID(50,-50);
 	else if((!gpio_get_level(GRAY_CHANNEL_3)&&!gpio_get_level(GRAY_CHANNEL_4))||(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))) PID(100,0); 
+}
+
+void countlaps(void)
+{
+	if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))
+	{
+		system_delay_ms (780);
+		if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4)) lap++;
+		if(lap==8) 
+		{
+			if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4)) PID(0,0);
+		}
+	}
+	if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))
+	{
+//	led(on);
+//	system_delay_ms (100);
+//	led(off);			//声光提示！！！
+	}
+	if(!gpio_get_level(GRAY_CHANNEL_3)||!gpio_get_level(GRAY_CHANNEL_4))
+	{
+//	led(on);
+//	system_delay_ms (100);
+//	led(off);
+	}
 }
