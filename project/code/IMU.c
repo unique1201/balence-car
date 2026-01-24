@@ -29,6 +29,11 @@ float Error02,Error12,ErrorInt2,out2;
 float Target;
 
 
+uint8_t turn_count=0;          // 衔接处遇到次数（起点算第1次）
+uint8_t is_turning=0;          // 转向执行中标记（0：未转向，1：转向中）
+float target_turn_angle=0.0f;  // 转向目标角度
+#define TURN_ANGLE 40.0f         // 单次转向角度（40度）
+#define TURN_THRESHOLD 0.5f      // 转向角度误差阈值（±0.5度视为到位）
 
 
 
@@ -46,6 +51,58 @@ void ztjs()
 	AngleGyro = Angle + data_gyro_y/32768 * 2000*0.001;
 	Angle = Alpha *AngleAcc +(1-Alpha)* AngleGyro;
 }
+
+
+void turn_in_place(float target_angle)	//新的
+{
+	is_turning=1;  //标记转向中
+	target_turn_angle=target_angle;
+	
+	//角度闭环PID控制，直到角度误差小于阈值
+	while(fabs(Angle-target_turn_angle)>TURN_THRESHOLD)
+	{
+		ztjs();//实时更新角度
+		
+		//角度环PID计算（仅控制转向，速度为0）
+		actualAngle=Angle;
+		Error1=Error0;
+		Error0=target_turn_angle-actualAngle;
+		ErrorInt+=Error0;
+		
+		// 限幅积分项，防止积分饱和
+		if(ErrorInt>500) ErrorInt=500;
+		if(ErrorInt<-500) ErrorInt=-500;
+		
+		out =kp1*Error0+ki1*ErrorInt+kd1*(Error0-Error1);
+		
+		// 原地转向：平均速度为0，转向差由PID输出决定
+		AvePWM=0;
+		DifPWM=(int16_t)out;
+		
+		// PWM限幅
+		leftPWM=AvePWM+DifPWM/2;
+		rightPWM=AvePWM-DifPWM/2;
+		if(leftPWM>50) leftPWM=50;  // 转向时PWM适当降低，避免过冲
+		if(leftPWM<-50) leftPWM=-50;
+		if(rightPWM>50) rightPWM=50;
+		if(rightPWM<-50) rightPWM=-50;
+		
+		// 输出PWM控制电机
+		pwm_set_duty(TIM5_PWM_CH2_A1,leftPWM);
+		pwm_set_duty(TIM5_PWM_CH4_A3,rightPWM);
+	}
+	
+	// 转向到位，停止电机
+	leftPWM=0;
+	rightPWM=0;
+	pwm_set_duty(TIM5_PWM_CH2_A1,leftPWM);
+	pwm_set_duty(TIM5_PWM_CH4_A3,rightPWM);
+	
+	is_turning=0;  // 清除转向标记
+	ErrorInt=0;    // 清零积分项
+}
+
+
 void PID(float Target2,float Target3)//2是速度环，设置目标速度。3是转向环，设置的是左右速度差。
 {
 	static float path_target_left = 0, path_target_right = 0;
@@ -104,6 +161,32 @@ void PID(float Target2,float Target3)//2是速度环，设置目标速度。3是
     }
 	
 }
+
+uint8_t get_turn_count(void)
+{
+	return turn_count;
+}
+
+void trigger_turn(void)
+{
+	turn_count++;  //次数+1（起点算第1次）
+	float current_angle=Angle;
+	float target_angle;
+	
+	if(turn_count%2==1)
+	{
+		target_angle=current_angle+TURN_ANGLE; //右转40度
+	}
+	else
+	{
+		target_angle=current_angle-TURN_ANGLE; //左转40度
+	}
+	
+	// 执行原地转向
+	turn_in_place(target_angle);
+}
+
+
 //使用时在主函数加上
 //pit_us_init(TIM1_PIT, 1000);
 

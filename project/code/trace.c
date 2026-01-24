@@ -5,6 +5,10 @@
 
 int lap = 0;
 
+uint8_t last_gray_status = 0;  // 上一次灰度传感器状态
+#define JUNCTION_THRESHOLD 0x7F // 黑白衔接判定阈值（可根据实际调试）
+
+
 void gray_sensor_init(void)
 {
     for (gray_channel_enum ch = GRAY_CHANNEL_0; ch < 8; ch++)
@@ -70,4 +74,21 @@ void countlaps(void)
 	led_off();
 	buzzer_off();
 	}
+}
+
+// 新增：黑白跑道衔接处检测函数
+uint8_t detect_junction(void)
+{
+	uint16_t current_gray = gray_sensor_read_all();
+	uint8_t is_junction = 0;
+	
+	// 判定逻辑：灰度状态跳变（全白→有黑 或 全黑→有白），且不是噪声
+	if(fabs(current_gray - last_gray_status) > JUNCTION_THRESHOLD)
+	{
+		is_junction = 1;
+	}
+	
+	// 更新上一次状态
+	last_gray_status = current_gray;
+	return is_junction;
 }
