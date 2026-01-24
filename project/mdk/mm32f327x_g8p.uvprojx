@@ -16,7 +16,7 @@
         <TargetCommonOption>
           <Device>MM32F3273G8P</Device>
           <Vendor>MindMotion</Vendor>
-          <PackID>MindMotion.MM32F3270_DFP.1.0.5</PackID>
+          <PackID>MindMotion.MM32F3270_DFP.1.1.8</PackID>
           <PackURL>http://www.mindmotion.com.cn/Download/MDK_KEIL/</PackURL>
           <Cpu>IRAM(0x20000000,0x20000) IROM(0x08000000,0x80000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -705,16 +705,6 @@
               <FilePath>..\..\libraries\zf_device\zf_device_absolute_encoder.h</FilePath>
             </File>
             <File>
-              <FileName>zf_device_bluetooth_ch9141.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_ch9141.c</FilePath>
-            </File>
-            <File>
-              <FileName>zf_device_bluetooth_ch9141.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_ch9141.h</FilePath>
-            </File>
-            <File>
               <FileName>zf_device_camera.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\libraries\zf_device\zf_device_camera.c</FilePath>
@@ -943,6 +933,16 @@
               <FileName>zf_device_wireless_uart.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\libraries\zf_device\zf_device_wireless_uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_bluetooth_hc04.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_hc04.c</FilePath>
+            </File>
+            <File>
+              <FileName>zf_device_bluetooth_hc04.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\libraries\zf_device\zf_device_bluetooth_hc04.h</FilePath>
             </File>
           </Files>
         </Group>

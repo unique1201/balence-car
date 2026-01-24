@@ -34,6 +34,7 @@
 ********************************************************************************************************************/
 
 #include "zf_common_headfile.h"
+#include "IMU.h"
 
 // 打开新的工程或者工程移动了位置务必执行以下操作
 // 第一步 关闭上面所有打开的文件
@@ -42,27 +43,67 @@
 // 本例程是开源库移植用空工程
 
 // **************************** 代码区域 ****************************
+bluetooth_hc04_joystick_string_data_t string_data;
+bluetooth_hc04_joystick_numeric_data_t numeric_data;
+extern float actualspeed;
+
+
+
+
+
+void bluetooth_hc04_string_callback(bluetooth_hc04_joystick_string_data_t *data)
+{
+    if (data->valid)
+	{
+        printf("Received string: [\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"]\r\n",
+               data->joystick, data->data1, data->data2, 
+               data->data3, data->data4);
+		int32 speed = bluetooth_hc04_string_to_int(data->data2);
+        int32 Difspeed = bluetooth_hc04_string_to_int(data->data3);
+        PID(speed, Difspeed);   
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 int main(void)
 {
     clock_init(SYSTEM_CLOCK_120M);                                              // 初始化芯片时钟 工作频率为 120MHz
     debug_init();                                                               // 初始化默认 Debug UART
-
+	extern float Angle;
     // 此处编写用户代码 例如外设初始化代码等
     key_init(1);
 	oled_init();
 	mpu6050_init();
-	bluetooth_ch9141_init();
+	bluetooth_hc04_init();
 	pwm_init(TIM5_PWM_CH2_A1, 17000,0);
 	pwm_init(TIM5_PWM_CH4_A3, 17000,0);
 	encoder_quad_init(TIM3_ENCODER, TIM3_ENCODER_CH1_B4, TIM3_ENCODER_CH2_B5);
 	encoder_quad_init(TIM4_ENCODER, TIM4_ENCODER_CH1_B6, TIM4_ENCODER_CH2_B7);
+	pit_us_init(TIM1_PIT, 1000);
     // 此处编写用户代码 例如外设初始化代码等
 
     while(1)
     {
         // 此处编写需要循环执行的代码
+		bluetooth_hc04_printf("[plot,%f]",Angle);
+		bluetooth_hc04_get_all_strings(string_data.joystick,string_data.data1,string_data.data2,string_data.data3,string_data.data4);
+		bluetooth_hc04_string_callback(&string_data);
+		
+		
         
         // 此处编写需要循环执行的代码
     }
 }
+
 // **************************** 代码区域 ****************************

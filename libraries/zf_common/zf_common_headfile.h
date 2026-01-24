@@ -98,7 +98,7 @@
 
 //===================================================外接设备驱动层===================================================
 #include "zf_device_absolute_encoder.h"
-#include "zf_device_bluetooth_ch9141.h"
+#include "zf_device_bluetooth_hc04.h"
 #include "zf_device_camera.h"
 #include "zf_device_dl1a.h"
 #include "zf_device_dm1xa.h"
