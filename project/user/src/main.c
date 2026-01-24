@@ -60,7 +60,7 @@ void bluetooth_hc04_string_callback(bluetooth_hc04_joystick_string_data_t *data)
                data->data3, data->data4);
 		int32 speed = bluetooth_hc04_string_to_int(data->data2);
         int32 Difspeed = bluetooth_hc04_string_to_int(data->data3);
-        PID(speed, Difspeed);   
+        PID(speed,-Difspeed);   
     }
 }
 
