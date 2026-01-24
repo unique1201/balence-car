@@ -99,6 +99,25 @@ int main(void)
 		bluetooth_hc04_printf("[plot,%f]",Angle);
 		bluetooth_hc04_get_all_strings(string_data.joystick,string_data.data1,string_data.data2,string_data.data3,string_data.data4);
 		bluetooth_hc04_string_callback(&string_data);
+		//		这是模式4的按键控制，key1_pressed()替换为确定键,需要再有一个按钮切换path的模式，一共4种。对应模式按下确认键开始对应功能。
+//		if (key1_pressed()) {
+//            switch (path_get_state()) {
+//                case PATH_IDLE:
+//                    path_record_start();
+//                    break;
+//                case PATH_RECORDING:
+//                    path_record_stop();
+//                    path_save_to_flash();
+//                    break;
+//                case PATH_LOADED:
+//                case PATH_SAVED:
+//                    path_replay_start();
+//                    break;
+//                case PATH_REPLAYING:
+//                    path_replay_stop();
+//                    break;
+//            }
+//        }
 		
 		
         

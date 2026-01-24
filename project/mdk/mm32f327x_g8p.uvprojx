@@ -454,6 +454,16 @@
               <FileType>5</FileType>
               <FilePath>..\..\..\..\STM32Project\balence-car\project\code\motor.h</FilePath>
             </File>
+            <File>
+              <FileName>path_record.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\path_record.c</FilePath>
+            </File>
+            <File>
+              <FileName>path_record.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\code\path_record.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -1,5 +1,6 @@
 #include "isr.h"
 #include "IMU.h"
+#include "path_record.h"
 
 //-------------------------------------------------------------------------------------------------------------------
 // 函数简介     TIM1 的定时器更新中断服务函数 启动 .s 文件定义 不允许修改函数名称
@@ -9,6 +10,21 @@ void TIM1_UP_IRQHandler (void)
 {
 	extern void ztjs();
 	ztjs();
+	// 路径记录/复现处理
+        if (path_get_state() == PATH_RECORDING) {
+            path_record_step();
+        }
+        
+        // PID控制
+        float target_left = 0, target_right = 0;
+        if (path_get_state() == PATH_REPLAYING) {
+            // 路径复现模式，从路径获取目标速度
+            path_replay_step(&target_left, &target_right);
+            PID(0, target_left + target_right);  // 调整PID调用
+        } else {
+            // 其他模式...
+            PID(0, 0);
+		}
     TIM1->SR &= ~TIM1->SR;                                                      // 清空寄存器
 	//TIM1->SR &= ~TIM_SR_UIF;（仅清除标志位）
 }

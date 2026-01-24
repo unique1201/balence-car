@@ -2,6 +2,7 @@
 #include "zf_driver_pwm.h"
 #include "zf_device_mpu6050.h"
 #include "zf_driver_encoder.h"
+#include "path_record.h"
 #include <math.h>
 
 
@@ -47,6 +48,14 @@ void ztjs()
 }
 void PID(float Target2,float Target3)//2是速度环，设置目标速度。3是转向环，设置的是左右速度差。
 {
+	static float path_target_left = 0, path_target_right = 0;
+    
+    // 如果在路径复现模式，覆盖目标速度
+    if (path_get_state() == PATH_REPLAYING) {
+        // 使用路径目标速度
+        Target2 = (path_target_left + path_target_right) / 2.0f;  // 平均速度
+        Target3 = path_target_left - path_target_right;          // 速度差
+    }
 	int16_t count0=0,count1=0;
 	count0++;
 	count1++;
@@ -89,6 +98,10 @@ void PID(float Target2,float Target3)//2是速度环，设置目标速度。3是
 	if (rightPWM>100) rightPWM=100;else if (rightPWM<-100) rightPWM=-100;
 	pwm_set_duty(TIM5_PWM_CH2_A1,leftPWM);
 	pwm_set_duty(TIM5_PWM_CH4_A3,rightPWM);
+	// 在路径复现时，更新路径目标
+    if (path_get_state() == PATH_REPLAYING) {
+        path_replay_step(&path_target_left, &path_target_right);
+    }
 	
 }
 //使用时在主函数加上
