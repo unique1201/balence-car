@@ -23,6 +23,8 @@ uint16 gray_sensor_read_all(void);
 
 void trace(void);
 
+void trace_default(void);
+
 void countlaps(void);
 
 uint8_t detect_junction(void);

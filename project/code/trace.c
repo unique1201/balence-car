@@ -8,6 +8,7 @@ int lap = 0;
 uint8_t last_gray_status = 0;  // 上一次灰度传感器状态
 #define JUNCTION_THRESHOLD 0x7F // 黑白衔接判定阈值（可根据实际调试）
 
+#define DEFAULT_TRACE_SPEED 50	//默认速度
 
 void gray_sensor_init(void)
 {
@@ -38,13 +39,18 @@ uint16 gray_sensor_read_all(void)
     return gray_status;
 }
 
-void trace(void)
+void trace(int16_t speed)
 {
-	if(!gpio_get_level(GRAY_CHANNEL_0)||!gpio_get_level(GRAY_CHANNEL_1)||!gpio_get_level(GRAY_CHANNEL_2)) PID(50,-100);
-	else if(!gpio_get_level(GRAY_CHANNEL_5)||!gpio_get_level(GRAY_CHANNEL_6||!gpio_get_level(GRAY_CHANNEL_7))) PID(50,100);
-	else if(!gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4)) PID(50,50);
-	else if(!gpio_get_level(GRAY_CHANNEL_4)&&gpio_get_level(GRAY_CHANNEL_3)) PID(50,-50);
-	else if((!gpio_get_level(GRAY_CHANNEL_3)&&!gpio_get_level(GRAY_CHANNEL_4))||(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))) PID(100,0); 
+	if(!gpio_get_level(GRAY_CHANNEL_0)||!gpio_get_level(GRAY_CHANNEL_1)||!gpio_get_level(GRAY_CHANNEL_2)) PID(speed,-100);
+	else if(!gpio_get_level(GRAY_CHANNEL_5)||!gpio_get_level(GRAY_CHANNEL_6||!gpio_get_level(GRAY_CHANNEL_7))) PID(speed,100);
+	else if(!gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4)) PID(speed,50);
+	else if(!gpio_get_level(GRAY_CHANNEL_4)&&gpio_get_level(GRAY_CHANNEL_3)) PID(speed,-50);
+	else if((!gpio_get_level(GRAY_CHANNEL_3)&&!gpio_get_level(GRAY_CHANNEL_4))||(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))) PID(speed,0); 
+}
+
+void trace_default(void)
+{
+    trace(DEFAULT_TRACE_SPEED);
 }
 
 void countlaps(void)
@@ -58,6 +64,10 @@ void countlaps(void)
 			if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4)) PID(0,0);
 		}
 	}
+}
+
+void prompts()
+{
 	if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))
 	{
 	led_on();
@@ -76,7 +86,6 @@ void countlaps(void)
 	}
 }
 
-// 新增：黑白跑道衔接处检测函数
 uint8_t detect_junction(void)
 {
 	uint16_t current_gray = gray_sensor_read_all();
@@ -86,6 +95,7 @@ uint8_t detect_junction(void)
 	if(fabs(current_gray - last_gray_status) > JUNCTION_THRESHOLD)
 	{
 		is_junction = 1;
+		if(!is_turning) trigger_turn();
 	}
 	
 	// 更新上一次状态

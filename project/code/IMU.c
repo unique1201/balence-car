@@ -192,13 +192,17 @@ void trigger_turn(void)
 	float current_angle=Angle0;
 	float target_angle;
 	
-	if(turn_count%2==1)
+	if(turn_count % 4 == 1) 
 	{
-		target_angle=current_angle+TURN_ANGLE; //右转40度
+		target_angle = current_angle + TURN_ANGLE; // 右转
+	}
+	else if(turn_count % 4 == 3)
+	{
+		target_angle = current_angle - TURN_ANGLE; // 左转
 	}
 	else
 	{
-		target_angle=current_angle-TURN_ANGLE; //左转40度
+		return; // 偶数次/其他次数不转向
 	}
 	
 	// 执行原地转向

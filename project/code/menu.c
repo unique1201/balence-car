@@ -5,6 +5,7 @@
 #include "IMU.h"
 #include "zf_device_bluetooth_hc04.h"
 #include "path_record.h"
+#include "trace.h"
 
 //变量
 extern float kp1,ki1,kd1;
@@ -13,6 +14,15 @@ extern float kp3,ki3,kd3;
 extern bluetooth_hc04_joystick_string_data_t string_data;
 extern float actualspeed;
 
+//发车模式2/3变量
+static int16_t trace_speed=50;  // 初始速度
+#define SPEED_STEP 5              // 调速步长
+#define SPEED_MAX 100             // 最大速度
+#define SPEED_MIN 0               // 最小速度
+
+//发车模式3变量
+static uint8_t junction_hint_flag = 0;  // 交界提示标记（0-未提示，1-已提示）
+#define HINT_DELAY 300                // 声光提示时长(ms)
 
 
 
@@ -406,14 +416,124 @@ void M1(void)
     PID(0,0);
 }
 
-void M2(void)
+void M2(void)	//key1：加速，key2：减速，key3：start+暂停循迹，key4；退出当前菜单
 {
-		
+	uint8_t is_running = 0;
+    oled_clear();
+    PID(0, 0);  // 强制小车停止
+    oled_show_string(0, 1, "M2: Trace");
+    oled_show_string(1, 1, "Speed: ");
+    oled_show_int(1, 8, trace_speed, 3);  // 显示初始速度
+
+    while (1)
+    {
+        if(key_get_state(KEY_3))
+        {
+            is_running = !is_running;
+            if(is_running)
+            {
+                oled_show_string(2,1,"run");
+            }
+            else
+            {
+                PID(0,0);
+                oled_show_string(2,1,"stop");
+            }
+            system_delay_ms(200);  //消抖
+        }
+
+        if(key_get_state(KEY_1))
+        {
+            trace_speed+=SPEED_STEP;
+            if (trace_speed>SPEED_MAX) trace_speed=SPEED_MAX;
+            oled_show_int(1,8,trace_speed,3);
+            system_delay_ms(200);  //消抖
+        }
+
+        if(key_get_state(KEY_2))
+        {
+            trace_speed-=SPEED_STEP;
+            if(trace_speed<SPEED_MIN) trace_speed=SPEED_MIN;
+            oled_show_int(1,8,trace_speed,3);
+            system_delay_ms(200);  // 消抖
+        }
+
+        if (key_get_state(KEY_4))
+        {
+            PID(0, 0);
+            oled_clear();
+            return;
+        }
+
+        if (is_running)
+        {
+            trace(trace_speed);
+            ztjs();
+        }
+    }
 }
 
 void M3(void)
 {
-    
+    uint8_t is_running = 0;
+    oled_clear();
+    PID(0, 0);
+    oled_show_string(0, 1, "M3: Trace+Hint");
+    oled_show_string(1, 1, "Speed: ");
+    oled_show_int(1, 8, trace_speed, 3);
+    oled_show_string(2, 1, "Lap: 0/8");
+
+    lap = 0;
+	turn_count = 0;
+    is_turning = 0;
+
+    while (1)
+    {
+        if (lap >= 8)
+        {
+            PID(0, 0);
+            oled_show_string(2, 1, "Lap: 8/8 STOP");
+            led_on();
+			buzzer_on();
+			system_delay_ms(1000); // 停止提示，测试用，正式版可删
+            led_off();
+			buzzer_off();
+            oled_clear();
+            return;
+        }
+        if(key_get_state(KEY_3)) // 启停
+        {
+            is_running = !is_running;
+            is_running ? oled_show_string(3,1,"run") : (PID(0,0), oled_show_string(3,1,"stop"));
+            system_delay_ms(200);
+        }
+        if(key_get_state(KEY_1))
+        {
+            trace_speed=(trace_speed+SPEED_STEP)>SPEED_MAX?SPEED_MAX:(trace_speed+SPEED_STEP);
+            oled_show_int(1,8,trace_speed,3);
+            system_delay_ms(200);
+        }
+        if(key_get_state(KEY_2))
+        {
+            trace_speed=(trace_speed-SPEED_STEP)<SPEED_MIN?SPEED_MIN:(trace_speed-SPEED_STEP);
+            oled_show_int(1,8,trace_speed,3);
+            system_delay_ms(200);
+        }
+        if (key_get_state(KEY_4))
+        {
+            PID(0, 0);oled_clear();return;
+        }
+
+        if (is_running)
+        {
+            trace(trace_speed);
+            ztjs();
+            detect_junction();
+            prompts();
+            countlaps();
+            oled_show_int(2, 5, lap, 1);
+        }
+    }
 }
 
 void M4(void)
