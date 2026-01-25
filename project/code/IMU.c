@@ -27,6 +27,14 @@ float AveSpeed,DifSpeed;
 float Error01,Error11,ErrorInt1,out1;
 float Error02,Error12,ErrorInt2,out2;
 float Target;
+static int16_t count0=0,count1=0;
+
+int16_t leftPWM0,rightPWM0;
+int16_t AvePWM0,DifPWM0;
+float ErrorA,ErrorB,ErrorInt0,out0;
+float actualAngle0;
+float angle0;
+float kp=2.5f,ki=0.1f,kd=0.6f;
 
 
 uint8_t turn_count=0;          // 衔接处遇到次数（起点算第1次）
@@ -50,70 +58,77 @@ void ztjs()
 	AngleAcc = -atan2(data_acc_x,data_acc_z)/3.14159*180;
 	AngleGyro = Angle + data_gyro_y/32768 * 2000*0.001;
 	Angle = Alpha *AngleAcc +(1-Alpha)* AngleGyro;
+	
+	Angle0=Angle	//发车3要用到解算后的angle，同时避免混淆
 }
 
 
-void turn_in_place(float target_angle)	//新的
+void turn_in_place(float target_angle)	//新的发车3专用pid
 {
 	is_turning=1;  //标记转向中
 	target_turn_angle=target_angle;
 	
+	ErrorA=0;
+	ErroeB=0;
+	ErrorInt0=0;
+	
 	//角度闭环PID控制，直到角度误差小于阈值
-	while(fabs(Angle-target_turn_angle)>TURN_THRESHOLD)
+	while(fabs(Angle0-target_turn_angle)>TURN_THRESHOLD)
 	{
 		ztjs();//实时更新角度
 		
 		//角度环PID计算（仅控制转向，速度为0）
-		actualAngle=Angle;
-		Error1=Error0;
-		Error0=target_turn_angle-actualAngle;
-		ErrorInt+=Error0;
+		actualAngle0=Angle0;
+		ErrorB=ErrorA;
+		ErrorA=target_turn_angle-actualAngle0;
+		ErrorInt0+=ErrorA;
 		
 		// 限幅积分项，防止积分饱和
-		if(ErrorInt>500) ErrorInt=500;
-		if(ErrorInt<-500) ErrorInt=-500;
+		if(ErrorInt0>500) ErrorInt0=500;
+		if(ErrorInt0<-500) ErrorInt0=-500;
 		
-		out =kp1*Error0+ki1*ErrorInt+kd1*(Error0-Error1);
+		out0 =kp*ErrorA+ki*ErrorInt0+kd*(ErrorA-ErrorB);
 		
 		// 原地转向：平均速度为0，转向差由PID输出决定
-		AvePWM=0;
-		DifPWM=(int16_t)out;
+		AvePWM0=0;
+		DifPWM0=(int16_t)out0;
 		
 		// PWM限幅
-		leftPWM=AvePWM+DifPWM/2;
-		rightPWM=AvePWM-DifPWM/2;
-		if(leftPWM>50) leftPWM=50;  // 转向时PWM适当降低，避免过冲
-		if(leftPWM<-50) leftPWM=-50;
-		if(rightPWM>50) rightPWM=50;
-		if(rightPWM<-50) rightPWM=-50;
+		leftPWM0=AvePWM0+DifPWM0/2;
+		rightPWM0=AvePWM0-DifPWM0/2;
+		if(leftPWM0>50) leftPWM0=50;  // 转向时PWM适当降低，避免过冲
+		if(leftPWM0<-50) leftPWM0=-50;
+		if(rightPWM0>50) rightPWM0=50;
+		if(rightPWM0<-50) rightPWM0=-50;
 		
 		// 输出PWM控制电机
-		pwm_set_duty(TIM5_PWM_CH2_A1,leftPWM);
-		pwm_set_duty(TIM5_PWM_CH4_A3,rightPWM);
+		pwm_set_duty(TIM5_PWM_CH2_A1,leftPWM0);
+		pwm_set_duty(TIM5_PWM_CH4_A3,rightPWM0);
 	}
 	
 	// 转向到位，停止电机
-	leftPWM=0;
-	rightPWM=0;
-	pwm_set_duty(TIM5_PWM_CH2_A1,leftPWM);
-	pwm_set_duty(TIM5_PWM_CH4_A3,rightPWM);
+	leftPWM0=0;
+	rightPWM0=0;
+	pwm_set_duty(TIM5_PWM_CH2_A1,leftPWM0);
+	pwm_set_duty(TIM5_PWM_CH4_A3,rightPWM0);
 	
 	is_turning=0;  // 清除转向标记
-	ErrorInt=0;    // 清零积分项
+	ErrorInt0=0;    // 清零积分项
 }
 
 
 void PID(float Target2,float Target3)//2是速度环，设置目标速度。3是转向环，设置的是左右速度差。
 {
+
+	
 	static float path_target_left = 0, path_target_right = 0;
     
-    // 如果在路径复现模式，覆盖目标速度
+    // 如果在路径复现模式，覆盖目标速度	if(is_turning) return;
     if (path_get_state() == PATH_REPLAYING) {
         // 使用路径目标速度
         Target2 = (path_target_left + path_target_right) / 2.0f;  // 平均速度
         Target3 = path_target_left - path_target_right;          // 速度差
     }
-	int16_t count0=0,count1=0;
 	count0++;
 	count1++;
 	if (count0>10)
@@ -121,6 +136,10 @@ void PID(float Target2,float Target3)//2是速度环，设置目标速度。3是
 		count0=0;
 		leftSpeed=encoder_get_count(TIM3_ENCODER)/11.0/0.01/4.4;
 		rightSpeed=encoder_get_count(TIM4_ENCODER)/11.0/0.01/4.4;
+		
+		encoder_clear_count(TIM3_ENCODER);
+        encoder_clear_count(TIM4_ENCODER);
+		
 		AveSpeed=(leftSpeed+rightSpeed)/2.0;
 		DifSpeed=leftSpeed-rightSpeed;
 		
@@ -170,7 +189,7 @@ uint8_t get_turn_count(void)
 void trigger_turn(void)
 {
 	turn_count++;  //次数+1（起点算第1次）
-	float current_angle=Angle;
+	float current_angle=Angle0;
 	float target_angle;
 	
 	if(turn_count%2==1)
