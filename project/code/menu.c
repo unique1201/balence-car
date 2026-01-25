@@ -183,56 +183,201 @@ void K3(void)
 
 void Kp1(void)
 {
-    kp1+=0.1;
-	oled_show_float(0, 8, kp1, 3, 2);
+	while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			kp1+=0.1;
+			oled_show_float(0, 8, kp1, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			kp1-=0.1;
+			if (kp1<0) kp1 = 0.0f;
+			oled_show_float(0, 8, kp1, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
+	
 
 void Ki1(void)
 {
-    ki1+=0.1;
-	oled_show_float(0, 8, ki1, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			ki1+=0.1;
+			oled_show_float(0, 8, ki1, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			ki1-=0.1;
+			if (ki1<0) ki1 = 0.0f;
+			oled_show_float(0, 8, ki1, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void Kd1(void)
 {
-    kd1+=0.1;
-	oled_show_float(0, 8, kd1, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			kd1+=0.1;
+			oled_show_float(0, 8, kd1, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			kd1-=0.1;
+			if (kd1<0) kd1 = 0.0f;
+			oled_show_float(0, 8, kd1, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void Kp2(void)
 {
-    kp2+=0.1;
-	oled_show_float(0, 8, kp2, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			kp2+=0.1;
+			oled_show_float(0, 8, kp2, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			kp2-=0.1;
+			if (kp2<0) kp2 = 0.0f;
+			oled_show_float(0, 8, kp2, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void Ki2(void)
 {
-    ki2+=0.1;
-	oled_show_float(0, 8, ki2, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			ki2+=0.1;
+			oled_show_float(0, 8, ki2, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			ki2-=0.1;
+			if (ki2<0) ki2 = 0.0f;
+			oled_show_float(0, 8, ki2, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void Kd2(void)
 {
-    kd2+=0.1;
-	oled_show_float(0, 8, kd2, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			kd2+=0.1;
+			oled_show_float(0, 8, kd2, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			kd2-=0.1;
+			if (kd2<0) kd2 = 0.0f;
+			oled_show_float(0, 8, kd2, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void Kp3(void)
 {
-    kp3+=0.1;
-	oled_show_float(0, 8, kp3, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			kp3+=0.1;
+			oled_show_float(0, 8, kp3, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			kp3-=0.1;
+			if (kp3<0) kp3 = 0.0f;
+			oled_show_float(0, 8, kp3, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void Ki3(void)
 {
-    ki3+=0.1;
-	oled_show_float(0, 8, ki3, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			ki3+=0.1;
+			oled_show_float(0, 8, kp1, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			ki3-=0.1;
+			if (ki3<0) ki3 = 0.0f;
+			oled_show_float(0, 8, ki3, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void Kd3(void)
 {
-    kd3+=0.1;
-	oled_show_float(0, 8, kd3, 3, 2);
+    while (1)	
+	{
+		if (key_get_state(KEY_1))
+		{
+			kd3+=0.1;
+			oled_show_float(0, 8, kd3, 3, 2);
+		}
+		else if (key_get_state(KEY_2))
+		{
+			kd3-=0.1;
+			if (kd3<0) kd3 = 0.0f;
+			oled_show_float(0, 8, kd3, 3, 2);
+		}
+		else if (key_get_state(KEY_4))
+		{
+			return;
+		}
+	}
 }
 
 void M1(void)

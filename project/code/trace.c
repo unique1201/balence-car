@@ -1,4 +1,4 @@
-#include "mm32_device.h"                // Device header
+//#include "mm32_device.h"                // Device header
 
 #include "trace.h"
 #include "IMU.h"
@@ -35,7 +35,7 @@ uint16 gray_sensor_read_all(void)
 void trace(void)
 {
 	if(!gpio_get_level(GRAY_CHANNEL_0)||!gpio_get_level(GRAY_CHANNEL_1)||!gpio_get_level(GRAY_CHANNEL_2)) PID(50,-100);
-	else if(!gpio_get_level(GRAY_CHANNEL_5)||!gpio_get_level(GRAY_CHANNEL_6||!gpio_get_level(GRAY_CHANNEL_7)) PID(50,100);
+	else if(!gpio_get_level(GRAY_CHANNEL_5)||!gpio_get_level(GRAY_CHANNEL_6||!gpio_get_level(GRAY_CHANNEL_7))) PID(50,100);
 	else if(!gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4)) PID(50,50);
 	else if(!gpio_get_level(GRAY_CHANNEL_4)&&gpio_get_level(GRAY_CHANNEL_3)) PID(50,-50);
 	else if((!gpio_get_level(GRAY_CHANNEL_3)&&!gpio_get_level(GRAY_CHANNEL_4))||(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))) PID(100,0); 
