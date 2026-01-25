@@ -33,7 +33,7 @@ int16_t leftPWM0,rightPWM0;
 int16_t AvePWM0,DifPWM0;
 float ErrorA,ErrorB,ErrorInt0,out0;
 float actualAngle0;
-float angle0;
+float Angle0;
 float kp=2.5f,ki=0.1f,kd=0.6f;
 
 
@@ -59,7 +59,7 @@ void ztjs()
 	AngleGyro = Angle + data_gyro_y/32768 * 2000*0.001;
 	Angle = Alpha *AngleAcc +(1-Alpha)* AngleGyro;
 	
-	Angle0=Angle	//发车3要用到解算后的angle，同时避免混淆
+	Angle0=Angle;	//发车3要用到解算后的angle，同时避免混淆
 }
 
 
@@ -69,7 +69,7 @@ void turn_in_place(float target_angle)	//新的发车3专用pid
 	target_turn_angle=target_angle;
 	
 	ErrorA=0;
-	ErroeB=0;
+	ErrorB=0;
 	ErrorInt0=0;
 	
 	//角度闭环PID控制，直到角度误差小于阈值
