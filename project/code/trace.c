@@ -2,6 +2,9 @@
 
 #include "trace.h"
 #include "IMU.h"
+#include "led.h"
+#include "zf_driver_delay.h"
+#include <math.h>
 
 int lap = 0;
 
@@ -70,22 +73,18 @@ void prompts()
 {
 	if(gpio_get_level(GRAY_CHANNEL_3)&&gpio_get_level(GRAY_CHANNEL_4))
 	{
-	led_on();
-	buzzer_on();
+	
 	system_delay_ms (100);
-	led_off();
-	buzzer_off();
+	
 	}
 	if(!gpio_get_level(GRAY_CHANNEL_3)||!gpio_get_level(GRAY_CHANNEL_4))
 	{
-	led_on();
-	buzzer_on();
+	
 	system_delay_ms (200);
-	led_off();
-	buzzer_off();
+	
 	}
 }
-
+extern uint8_t is_turning;
 uint8_t detect_junction(void)
 {
 	uint16_t current_gray = gray_sensor_read_all();

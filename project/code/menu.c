@@ -4,6 +4,7 @@
 #include "zf_device_key.h"
 #include "IMU.h"
 #include "zf_device_bluetooth_hc04.h"
+#include "zf_driver_delay.h"
 #include "path_record.h"
 #include "trace.h"
 
@@ -483,9 +484,9 @@ void M3(void)
     oled_show_int(1, 8, trace_speed, 3);
     oled_show_string(2, 1, "Lap: 0/8");
 
-    lap = 0;
-	turn_count = 0;
-    is_turning = 0;
+    uint8_t lap = 0;
+	uint8_t turn_count = 0;
+    uint8_t is_turning = 0;
 
     while (1)
     {
@@ -493,11 +494,11 @@ void M3(void)
         {
             PID(0, 0);
             oled_show_string(2, 1, "Lap: 8/8 STOP");
-            led_on();
-			buzzer_on();
+//            led_on();
+//			buzzer_on();
 			system_delay_ms(1000); // 停止提示，测试用，正式版可删
-            led_off();
-			buzzer_off();
+//            led_off();
+//			buzzer_off();
             oled_clear();
             return;
         }

@@ -21,11 +21,12 @@ uint8 gray_sensor_read_channel(gray_channel_enum channel);
 
 uint16 gray_sensor_read_all(void);
 
-void trace(void);
+void trace(int16_t speed);
 
 void trace_default(void);
 
 void countlaps(void);
+void prompts();
 
 uint8_t detect_junction(void);
 
