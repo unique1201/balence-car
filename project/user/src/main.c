@@ -37,6 +37,7 @@
 #include "IMU.h"
 #include "encoder.h"
 #include "motor.h"
+#include "path_record.h"
 
 // 打开新的工程或者工程移动了位置务必执行以下操作
 // 第一步 关闭上面所有打开的文件
@@ -47,24 +48,7 @@
 // **************************** 代码区域 ****************************
 bluetooth_hc04_joystick_string_data_t string_data;
 bluetooth_hc04_joystick_numeric_data_t numeric_data;
-extern float actualspeed;
 
-
-
-
-
-void bluetooth_hc04_string_callback(bluetooth_hc04_joystick_string_data_t *data)
-{
-    if (data->valid)
-	{
-        printf("Received string: [\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"]\r\n",
-               data->joystick, data->data1, data->data2, 
-               data->data3, data->data4);
-		int32 speed = bluetooth_hc04_string_to_int(data->data2);
-        int32 Difspeed = bluetooth_hc04_string_to_int(data->data3);
-        PID(speed,-Difspeed);   
-    }
-}
 
 
 
@@ -91,33 +75,13 @@ int main(void)
 	motor_init();
 	encoder_init();
 	pit_us_init(TIM1_PIT, 1000);
+	path_init();
     // 此处编写用户代码 例如外设初始化代码等
 
     while(1)
     {
         // 此处编写需要循环执行的代码
 		bluetooth_hc04_printf("[plot,%f]",Angle);
-		bluetooth_hc04_get_all_strings(string_data.joystick,string_data.data1,string_data.data2,string_data.data3,string_data.data4);
-		bluetooth_hc04_string_callback(&string_data);
-		//		这是模式4的按键控制，key1_pressed()替换为确定键,需要再有一个按钮切换path的模式，一共4种。对应模式按下确认键开始对应功能。
-//		if (key1_pressed()) {
-//            switch (path_get_state()) {
-//                case PATH_IDLE:
-//                    path_record_start();
-//                    break;
-//                case PATH_RECORDING:
-//                    path_record_stop();
-//                    path_save_to_flash();
-//                    break;
-//                case PATH_LOADED:
-//                case PATH_SAVED:
-//                    path_replay_start();
-//                    break;
-//                case PATH_REPLAYING:
-//                    path_replay_stop();
-//                    break;
-//            }
-//        }
 		
 		
         
