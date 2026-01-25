@@ -3,11 +3,32 @@
 #include "zf_device_oled.h"
 #include "zf_device_key.h"
 #include "IMU.h"
+#include "zf_device_bluetooth_hc04.h"
+#include "path_record.h"
 
 //变量
 extern float kp1,ki1,kd1;
 extern float kp2,ki2,kd2;
 extern float kp3,ki3,kd3;
+extern bluetooth_hc04_joystick_string_data_t string_data;
+extern float actualspeed;
+
+
+
+
+
+void bluetooth_hc04_string_callback(bluetooth_hc04_joystick_string_data_t *data)
+{
+    if (data->valid)
+	{
+        printf("Received string: [\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"]\r\n",
+               data->joystick, data->data1, data->data2, 
+               data->data3, data->data4);
+		int32 speed = bluetooth_hc04_string_to_int(data->data2);
+        int32 Difspeed = bluetooth_hc04_string_to_int(data->data3);
+        PID(speed,-Difspeed);   
+    }
+}
 
 void display_menu(struct option_class* option, int displayItems, int currentLine)
 {
@@ -242,7 +263,7 @@ void M1(void)
 
 void M2(void)
 {
-    
+		
 }
 
 void M3(void)
@@ -252,10 +273,37 @@ void M3(void)
 
 void M4(void)
 {
-    
+    //		这是模式4的按键控制，需要再有一个按钮切换path的模式，一共4种。对应模式按下确认键开始对应功能。
+	if (key_get_state(KEY_4))
+	{
+		extern PathState path_state;
+		path_state = PATH_RECORDING;
+	}
+	if (key_get_state(KEY_3))
+	{
+        switch (path_get_state())
+		{
+            case PATH_IDLE:
+				path_record_start();
+				break;
+            case PATH_RECORDING:
+                path_record_stop();
+                path_save_to_flash();
+                break;
+			case PATH_LOADED:
+			case PATH_SAVED:
+				path_replay_start();
+				break;
+			case PATH_REPLAYING:
+				path_replay_stop();
+				break;
+	  }
+  }
 }
 
 void M5(void)
 {
-    
+    bluetooth_hc04_get_all_strings(string_data.joystick,string_data.data1,string_data.data2,string_data.data3,string_data.data4);
+	bluetooth_hc04_string_callback(&string_data);
+		
 }
