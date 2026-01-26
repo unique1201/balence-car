@@ -3,9 +3,9 @@
 #include "encoder.h"
 #include "motor.h"
 #include "path_record.h"
+#include "menu.h"
 
 bluetooth_hc04_joystick_string_data_t string_data;
-bluetooth_hc04_joystick_numeric_data_t numeric_data;
 
 
 int main(void)
@@ -26,5 +26,6 @@ int main(void)
     while(1)
     {
 		bluetooth_hc04_printf("[plot,%f]",Angle);
+		
     }
 }

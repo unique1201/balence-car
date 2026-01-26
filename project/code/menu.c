@@ -25,21 +25,18 @@ static int16_t trace_speed=50;  // 初始速度
 static uint8_t junction_hint_flag = 0;  // 交界提示标记（0-未提示，1-已提示）
 #define HINT_DELAY 300                // 声光提示时长(ms)
 
-
-
-
 void bluetooth_hc04_string_callback(bluetooth_hc04_joystick_string_data_t *data)
 {
     if (data->valid)
 	{
-        printf("Received string: [\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"]\r\n",
-               data->joystick, data->data1, data->data2, 
-               data->data3, data->data4);
 		int32 speed = bluetooth_hc04_string_to_int(data->data2);
         int32 Difspeed = bluetooth_hc04_string_to_int(data->data3);
         PID(speed,-Difspeed);   
     }
 }
+
+
+
 
 void display_menu(struct option_class* option, int displayItems, int currentLine)
 {

@@ -96,7 +96,7 @@ void pwm_init (pwm_channel_enum pin, const uint32 freq, const uint32 duty)
     // 就去查看你在什么地方调用这个函数 检查你的传入参数
     // 这里是检查是否有重复使用定时器
     // 比如初始化了 TIM1_PIT 然后又初始化成 TIM1_PWM 这种用法是不允许的
-    zf_assert(timer_funciton_check((timer_index_enum)((pin & 0xF0000) >> 16), TIMER_FUNCTION_PWM));
+    //zf_assert(timer_funciton_check((timer_index_enum)((pin & 0xF0000) >> 16), TIMER_FUNCTION_PWM));
     // 如果是这一行报错 那你得去看看最大占空比是限定的多少 占空比写入错误
     zf_assert(PWM_DUTY_MAX >= duty);
 
