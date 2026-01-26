@@ -6,9 +6,9 @@
 
 void motor_init(void)
 {
-	timer_init(TIM_5, TIMER_US);  //初始化TIM_5，us为单位
-	timer_clock_enable (TIM_5);   //使能时钟
-	timer_start(TIM_5);           //开启时钟
+//	timer_init(TIM_5, TIMER_US);  //初始化TIM_5，us为单位
+//	timer_clock_enable (TIM_5);   //使能时钟
+//	timer_start(TIM_5);           //开启时钟
 
     // 方向控制引脚配置为推挽输出
     gpio_init(A0, GPO, 0, GPO_AF_PUSH_PULL);  // 默认输出低电平
