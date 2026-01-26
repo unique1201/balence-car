@@ -465,7 +465,8 @@ void M2(void)	//key1：加速，key2：减速，key3：start+暂停循迹，key4
 
         if (is_running)
         {
-            trace(trace_speed);
+            uint8_t gray_data=gray_sensor_read_all();
+            trace(trace_speed,gray_data);
             ztjs();
         }
     }
@@ -481,9 +482,11 @@ void M3(void)
     oled_show_int(1, 8, trace_speed, 3);
     oled_show_string(2, 1, "Lap: 0/8");
 
-    uint8_t lap = 0;
-	uint8_t turn_count = 0;
-    uint8_t is_turning = 0;
+	lap=0;
+	extern uint8_t turn_count;
+    extern uint8_t is_turning;
+	turn_count=0;
+	is_turning=0;
 
     while (1)
     {
@@ -491,10 +494,12 @@ void M3(void)
         {
             PID(0, 0);
             oled_show_string(2, 1, "Lap: 8/8 STOP");
-//            led_on();
+//          led_on();
+			oled_show_string(0, 1, "on");
 //			buzzer_on();
 			system_delay_ms(1000); // 停止提示，测试用，正式版可删
-//            led_off();
+//          led_off();
+			oled_show_string(0, 1, "off");
 //			buzzer_off();
             oled_clear();
             return;
@@ -524,11 +529,12 @@ void M3(void)
 
         if (is_running)
         {
-            trace(trace_speed);
+            uint8_t gray_data = gray_sensor_read_all();
+            trace(trace_speed, gray_data);
             ztjs();
             detect_junction();
-            prompts();
-            countlaps();
+            prompts(gray_data);
+            countlaps(gray_data);
             oled_show_int(2, 5, lap, 1);
         }
     }

@@ -1,32 +1,26 @@
 #ifndef __TRACE_H
 #define __TRACE_H
 
+#include "mm32_device.h"                // Device header
 #include "zf_driver_gpio.h"
 
-typedef enum
-{
-    GRAY_CHANNEL_0 = D0,
-    GRAY_CHANNEL_1 = D1,
-    GRAY_CHANNEL_2 = D2,
-    GRAY_CHANNEL_3 = D3,
-    GRAY_CHANNEL_4 = D4,
-	GRAY_CHANNEL_5 = D5,
-	GRAY_CHANNEL_6 = D6,
-	GRAY_CHANNEL_7 = D7,		//看具体引脚
-} gray_channel_enum;
+int lap=0;
 
 void gray_sensor_init(void);
 
-uint8 gray_sensor_read_channel(gray_channel_enum channel);
+void select_channel(uint8_t ch);
 
-uint16 gray_sensor_read_all(void);
+void read_group(uint8_t group, uint8_t *data);
 
-void trace(int16_t speed);
+uint8_t gray_sensor_read_all(void);
+
+void trace(int16_t trace_speed, uint8_t data);
 
 void trace_default(void);
 
-void countlaps(void);
-void prompts();
+void countlaps(uint8_t data);
+
+void prompts(uint8_t data);
 
 uint8_t detect_junction(void);
 
