@@ -6,7 +6,7 @@
 #include "zf_device_bluetooth_hc04.h"
 #include "zf_driver_delay.h"
 #include "path_record.h"
-#include "trace.h"
+//#include "trace.h"
 
 //变量
 extern float kp1,ki1,kd1;
@@ -44,6 +44,7 @@ void display_menu(struct option_class* option, int displayItems, int currentLine
 	for (int8_t i = 0; i < displayItems; i++) {
         oled_show_string(i, 2, option[i].Name);
     }
+	display_value(option, displayItems);
 }
 
 void display_value(struct option_class* option, int displayItems)
@@ -52,31 +53,31 @@ void display_value(struct option_class* option, int displayItems)
 	{
 		//PID参数显示
 		if (strcmp(option[i].Name, "kp1") == 0) {
-			oled_show_float(i, 8, kp1, 3, 2);
+			oled_show_float(80, i, kp1, 3, 2);
         } 
 		else if (strcmp(option[i].Name, "ki1") == 0) {
-            oled_show_float(i, 8, ki1, 3, 2);
+            oled_show_float(80, i, ki1, 3, 2);
         }
 		else if (strcmp(option[i].Name, "kd1") == 0) {
-            oled_show_float(i, 8, kd1, 3, 2);
+            oled_show_float(80, i, kd1, 3, 2);
         }
 		else if (strcmp(option[i].Name, "kp2") == 0) {
-			oled_show_float(i, 8, kp2, 3, 2);
+			oled_show_float(80, i, kp2, 3, 2);
         } 
 		else if (strcmp(option[i].Name, "ki2") == 0) {
-            oled_show_float(i, 8, ki2, 3, 2);
+            oled_show_float(80, i, ki2, 3, 2);
         }
 		else if (strcmp(option[i].Name, "kd2") == 0) {
-            oled_show_float(i, 8, kd2, 3, 2);
+            oled_show_float(80, i, kd2, 3, 2);
         }
 		else if (strcmp(option[i].Name, "kp3") == 0) {
-			oled_show_float(i, 8, kp3, 3, 2);
+			oled_show_float(80, i, kp3, 3, 2);
         } 
 		else if (strcmp(option[i].Name, "ki3") == 0) {
-            oled_show_float(i, 8, ki3, 3, 2);
+            oled_show_float(80, i, ki3, 3, 2);
         }
 		else if (strcmp(option[i].Name, "kd3") == 0) {
-            oled_show_float(i, 8, kd3, 3, 2);
+            oled_show_float(80, i, kd3, 3, 2);
         }
 	}
 }
@@ -84,42 +85,44 @@ void display_value(struct option_class* option, int displayItems)
 void Menu_loop(struct option_class* option)
 {
 	int8_t totalItems = 0;        //总项数
-    int8_t displayItems = 0;      //屏幕上显示的项目数量
+    int8_t displayItems = 4;      //屏幕上显示的项目数量
     int8_t currentLine = 0;       //光标所在行  
 	
 	while (option[totalItems].Name[0] != ' ' && option[totalItems].Name[0] != '\0') {totalItems++;}             
 	//计算总项数，在这里是到空格停止（不包括空格项）
 	
 	
-    display_menu(option, displayItems, currentLine);
+    display_menu(option, totalItems, currentLine);
 	// 初始显示
 	
 	while (1)
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))//上移
 		{
-			oled_show_string(currentLine, 1, " ");
+			oled_show_string(0, currentLine, " ");
 			currentLine--;
 			if (currentLine < 0) {
-				currentLine = displayItems - 1;
+				currentLine = totalItems - 1;
 			}
-			oled_show_string(currentLine, 1, ">");
+			oled_show_string(0, currentLine, ">");
 		}   
 		if (key_get_state(KEY_2))   //下移
 		{
-			oled_show_string(currentLine, 1, " ");
+			oled_show_string(0, currentLine, " ");
 			currentLine++;
-			if (currentLine > displayItems - 1) {
+			if (currentLine > totalItems - 1) {
 				currentLine = 0;
 			}
-			oled_show_string(currentLine, 1, ">");
+			oled_show_string(0, currentLine, ">");
 		} 
 		if (key_get_state(KEY_3))   //确认
 		{	
 			oled_clear();
 			if (currentLine < displayItems && option[currentLine].func != NULL) {
 				option[currentLine].func();// 从子菜单返回后刷新显示
-				display_menu(option, displayItems, currentLine);
+				display_menu(option, totalItems, currentLine);
 			}			
 		}
 		if (key_get_state(KEY_4)){oled_clear();return;}   //返回
@@ -212,201 +215,315 @@ void K3(void)
 
 void Kp1(void)
 {
+	oled_show_string(16, 0, "kp1");
+	oled_show_string(16, 1, "ki1");
+	oled_show_string(16, 2, "kd1");
+	oled_show_string(0, 0, ">");
+	oled_show_float(80, 0, kp1, 3, 2);
+	oled_show_float(80, 1, ki1, 3, 2);
+	oled_show_float(80, 2, kd1, 3, 2);
+	oled_show_string(120, 0, "+");
 	while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			kp1+=0.1;
-			oled_show_float(0, 8, kp1, 3, 2);
+			oled_show_float(80, 0, kp1, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			kp1-=0.1;
 			if (kp1<0) kp1 = 0.0f;
-			oled_show_float(0, 8, kp1, 3, 2);
+			oled_show_float(80, 0, kp1, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	K1();
 }
 	
 
 void Ki1(void)
 {
+	oled_show_string(16, 0, "kp1");
+	oled_show_string(16, 1, "ki1");
+	oled_show_string(16, 2, "kd1");
+	oled_show_string(0, 1, ">");
+	oled_show_float(80, 0, kp1, 3, 2);
+	oled_show_float(80, 1, ki1, 3, 2);
+	oled_show_float(80, 2, kd1, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			ki1+=0.1;
-			oled_show_float(0, 8, ki1, 3, 2);
+			oled_show_float(80, 1, ki1, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			ki1-=0.1;
 			if (ki1<0) ki1 = 0.0f;
-			oled_show_float(0, 8, ki1, 3, 2);
+			oled_show_float(80, 1, ki1, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	oled_show_string(0, 1, " ");
+	K1();
 }
 
 void Kd1(void)
 {
+	oled_show_string(16, 0, "kp1");
+	oled_show_string(16, 1, "ki1");
+	oled_show_string(16, 2, "kd1");
+	oled_show_string(0, 2, ">");
+	oled_show_float(80, 0, kp1, 3, 2);
+	oled_show_float(80, 1, ki1, 3, 2);
+	oled_show_float(80, 2, kd1, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			kd1+=0.1;
-			oled_show_float(0, 8, kd1, 3, 2);
+			oled_show_float(80, 2, kd1, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			kd1-=0.1;
 			if (kd1<0) kd1 = 0.0f;
-			oled_show_float(0, 8, kd1, 3, 2);
+			oled_show_float(80, 2, kd1, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	oled_show_string(0, 2, " ");
+	K1();
 }
 
 void Kp2(void)
 {
+	oled_show_string(16, 0, "kp2");
+	oled_show_string(16, 1, "ki2");
+	oled_show_string(16, 2, "kd2");
+	oled_show_string(0, 0, ">");
+	oled_show_float(80, 0, kp2, 3, 2);
+	oled_show_float(80, 1, ki2, 3, 2);
+	oled_show_float(80, 2, kd2, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			kp2+=0.1;
-			oled_show_float(0, 8, kp2, 3, 2);
+			oled_show_float(80, 0, kp2, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			kp2-=0.1;
 			if (kp2<0) kp2 = 0.0f;
-			oled_show_float(0, 8, kp2, 3, 2);
+			oled_show_float(80, 0, kp2, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	K2();
 }
 
 void Ki2(void)
 {
+	oled_show_string(16, 0, "kp2");
+	oled_show_string(16, 1, "ki2");
+	oled_show_string(16, 2, "kd2");
+	oled_show_string(0, 1, ">");
+	oled_show_float(80, 0, kp2, 3, 2);
+	oled_show_float(80, 1, ki2, 3, 2);
+	oled_show_float(80, 2, kd2, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			ki2+=0.1;
-			oled_show_float(0, 8, ki2, 3, 2);
+			oled_show_float(80, 1, ki2, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			ki2-=0.1;
 			if (ki2<0) ki2 = 0.0f;
-			oled_show_float(0, 8, ki2, 3, 2);
+			oled_show_float(80, 1, ki2, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	oled_show_string(0, 1, " ");
+	K2();
 }
 
 void Kd2(void)
 {
+	oled_show_string(16, 0, "kp2");
+	oled_show_string(16, 1, "ki2");
+	oled_show_string(16, 2, "kd2");
+	oled_show_string(0, 2, ">");
+	oled_show_float(80, 0, kp2, 3, 2);
+	oled_show_float(80, 1, ki2, 3, 2);
+	oled_show_float(80, 2, kd2, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			kd2+=0.1;
-			oled_show_float(0, 8, kd2, 3, 2);
+			oled_show_float(80, 2, kd2, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			kd2-=0.1;
 			if (kd2<0) kd2 = 0.0f;
-			oled_show_float(0, 8, kd2, 3, 2);
+			oled_show_float(80, 2, kd2, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	oled_show_string(0, 2, " ");
+	K2();
 }
 
 void Kp3(void)
 {
+	oled_show_string(16, 0, "kp3");
+	oled_show_string(16, 1, "ki3");
+	oled_show_string(16, 2, "kd3");
+	oled_show_string(0, 0, ">");
+	oled_show_float(80, 0, kp3, 3, 2);
+	oled_show_float(80, 1, ki3, 3, 2);
+	oled_show_float(80, 2, kd3, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			kp3+=0.1;
-			oled_show_float(0, 8, kp3, 3, 2);
+			oled_show_float(80, 0, kp3, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			kp3-=0.1;
 			if (kp3<0) kp3 = 0.0f;
-			oled_show_float(0, 8, kp3, 3, 2);
+			oled_show_float(80, 0, kp3, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	K3();
 }
 
 void Ki3(void)
 {
+	oled_show_string(16, 0, "kp3");
+	oled_show_string(16, 1, "ki3");
+	oled_show_string(16, 2, "kd3");
+	oled_show_string(0, 1, ">");
+	oled_show_float(80, 0, kp3, 3, 2);
+	oled_show_float(80, 1, ki3, 3, 2);
+	oled_show_float(80, 2, kd3, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			ki3+=0.1;
-			oled_show_float(0, 8, kp1, 3, 2);
+			oled_show_float(80, 1, kp1, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			ki3-=0.1;
 			if (ki3<0) ki3 = 0.0f;
-			oled_show_float(0, 8, ki3, 3, 2);
+			oled_show_float(80, 1, ki3, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
-			return;
+			break;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	oled_show_string(0, 1, " ");
+	K3();
 }
 
 void Kd3(void)
 {
+	oled_show_string(16, 0, "kp3");
+	oled_show_string(16, 1, "ki3");
+	oled_show_string(16, 2, "kd3");
+	oled_show_string(0, 2, ">");
+	oled_show_float(80, 0, kp3, 3, 2);
+	oled_show_float(80, 1, ki3, 3, 2);
+	oled_show_float(80, 2, kd3, 3, 2);
+	oled_show_string(120, 0, "+");
     while (1)	
 	{
+		key_scanner();
+		system_delay_ms(10);
 		if (key_get_state(KEY_1))
 		{
 			kd3+=0.1;
-			oled_show_float(0, 8, kd3, 3, 2);
+			oled_show_float(80, 2, kd3, 3, 2);
 		}
 		else if (key_get_state(KEY_2))
 		{
 			kd3-=0.1;
 			if (kd3<0) kd3 = 0.0f;
-			oled_show_float(0, 8, kd3, 3, 2);
+			oled_show_float(80, 2, kd3, 3, 2);
 		}
 		else if (key_get_state(KEY_4))
 		{
 			return;
 		}
 	}
+	oled_show_string(120, 0, " ");
+	oled_show_string(0, 2, " ");
+	K3();
 }
 
 void M1(void)
@@ -463,12 +580,12 @@ void M2(void)	//key1：加速，key2：减速，key3：start+暂停循迹，key4
             return;
         }
 
-        if (is_running)
-        {
-            uint8_t gray_data=gray_sensor_read_all();
-            trace(trace_speed,gray_data);
-            ztjs();
-        }
+//        if (is_running)
+//        {
+//            uint8_t gray_data=gray_sensor_read_all();
+//            trace(trace_speed,gray_data);
+//            ztjs();
+//        }
     }
 }
 
@@ -482,7 +599,7 @@ void M3(void)
     oled_show_int(1, 8, trace_speed, 3);
     oled_show_string(2, 1, "Lap: 0/8");
 
-	lap=0;
+	uint8_t lap=0;
 	extern uint8_t turn_count;
     extern uint8_t is_turning;
 	turn_count=0;
@@ -527,16 +644,16 @@ void M3(void)
             PID(0, 0);oled_clear();return;
         }
 
-        if (is_running)
-        {
-            uint8_t gray_data = gray_sensor_read_all();
-            trace(trace_speed, gray_data);
-            ztjs();
-            detect_junction();
-            prompts(gray_data);
-            countlaps(gray_data);
-            oled_show_int(2, 5, lap, 1);
-        }
+//        if (is_running)
+//        {
+//            uint8_t gray_data = gray_sensor_read_all();
+//            trace(trace_speed, gray_data);
+//            ztjs();
+//            detect_junction();
+//            prompts(gray_data);
+//            countlaps(gray_data);
+//            oled_show_int(2, 5, lap, 1);
+//        }
     }
 }
 
