@@ -1,10 +1,10 @@
 #ifndef __TRACE_H
 #define __TRACE_H
 
-#include "mm32_device.h"                // Device header
-#include "zf_driver_gpio.h"
 
-int lap=0;
+
+
+
 
 void gray_sensor_init(void);
 

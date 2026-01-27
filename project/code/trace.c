@@ -1,8 +1,13 @@
-#include "mm32_device.h"                // Device header
+//#include "mm32_device.h"                // Device header
 
 #include "zf_driver_gpio.h"
+#include "zf_driver_delay.h"
+#include "zf_device_oled.h"
+#include <math.h>
+#include "IMU.h"
 
 #include "trace.h"
+uint8_t lap=0;
 
 // 定义控制引脚（请根据你的硬件连接修改）
 #define GROUP1_EN_PIN    D0    // 第一组传感器使能引脚
@@ -94,7 +99,7 @@ uint8_t gray_sensor_read_all(void)
     return all_data;
 }
 
-void trace((int16_t trace_speed, uint8_t data))
+void trace(int16_t trace_speed, uint8_t data)
 {
     if((data&(X5|X4))== 0) PID(trace_speed,0);
     else if((data & X6) == 0) PID(trace_speed-30,-50);
@@ -147,7 +152,7 @@ uint8_t detect_junction(void)
 	uint8_t is_junction = 0;
 	
 	// 判定逻辑：灰度状态跳变（全白→有黑 或 全黑→有白），且不是噪声
-	if(fabs(current_gray - last_gray_status) > JUNCTION_THRESHOLD)
+	if(abs(current_gray - last_gray_status) > JUNCTION_THRESHOLD)
 	{
 		is_junction = 1;
 		if(!is_turning) trigger_turn();

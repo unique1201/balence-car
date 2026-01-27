@@ -14,6 +14,7 @@ extern float kp2,ki2,kd2;
 extern float kp3,ki3,kd3;
 extern bluetooth_hc04_joystick_string_data_t string_data;
 extern float actualspeed;
+extern uint8_t lap;
 
 //发车模式2/3变量
 static int16_t trace_speed=50;  // 初始速度
@@ -599,7 +600,7 @@ void M3(void)
     oled_show_int(1, 8, trace_speed, 3);
     oled_show_string(2, 1, "Lap: 0/8");
 
-	uint8_t lap=0;
+	
 	extern uint8_t turn_count;
     extern uint8_t is_turning;
 	turn_count=0;

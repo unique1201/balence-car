@@ -4,6 +4,7 @@
 #include "motor.h"
 #include "path_record.h"
 #include "menu.h"
+#include "trace.h"
 
 bluetooth_hc04_joystick_string_data_t string_data;
 
