@@ -115,17 +115,48 @@ void trace_default(void)
     trace(DEFAULT_TRACE_SPEED, data);
 }
 
+// 新增静态变量：标记是否已累计8段白道（进入黑道等待停止阶段）
+static uint8_t is_wait_stop = 0; 
+
 void countlaps(uint8_t data)
 {
-	if((data&(X5|X4))== 1)
-	{
-		system_delay_ms (780);
-		if((data&(X5|X4))== 1) lap++;
-		if(lap==8) 
-		{
-			if((data&(X5|X4))== 1) PID(0,0);
-		}
-	}
+    uint8_t white_flag = (data & (X5|X4))
+
+    if(!is_wait_stop)
+    {
+        if(white_flag)
+        {
+            system_delay_ms(600);
+            // 延迟后重新读取最新灰度数据，确保白道是稳定存在的
+            uint8_t new_data = gray_sensor_read_all();
+            uint8_t new_white_flag = (new_data & (X5|X4)) == (X5|X4);
+            
+            if(new_white_flag)
+            {
+                lap++;
+                if(lap >= 8)
+                {
+                    is_wait_stop = 1; 
+                }
+            }
+        }
+    }
+    else
+    {
+        if(white_flag)
+        {
+            system_delay_ms(200);
+            uint8_t new_data = gray_sensor_read_all();
+            uint8_t new_white_flag = (new_data & (X5|X4)) == (X5|X4);
+            
+            if(new_white_flag) //确认检测到白道
+            {
+                PID(0, 0);
+                lap = 0;
+                is_wait_stop = 0;
+            }
+        }
+    }
 }
 
 void prompts(uint8_t data)
